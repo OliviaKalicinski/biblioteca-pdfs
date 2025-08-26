@@ -16,6 +16,14 @@
     <meta name="twitter:site" content="@lovable_dev" />
     <meta name="twitter:image" content="https://lovable.dev/opengraph-image-p98pqg.png" />
     
+    <!-- Google Tag Manager -->
+    <script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+    new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+    j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+    'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+    })(window,document,'script','dataLayer','GTM-KMMCD5LP');</script>
+    <!-- End Google Tag Manager -->
+    
     <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -23,7 +31,70 @@
   </head>
 
   <body>
+    <!-- Google Tag Manager (noscript) -->
+    <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-KMMCD5LP"
+    height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+    <!-- End Google Tag Manager (noscript) -->
+    
     <div id="root"></div>
     <script type="module" src="/src/main.tsx"></script>
+    
+    <!-- GTM Event Tracking Scripts -->
+    <script>
+      // Initialize dataLayer
+      window.dataLayer = window.dataLayer || [];
+      
+      // Track login form submissions
+      document.addEventListener('DOMContentLoaded', function() {
+        // Track login button clicks
+        setTimeout(function() {
+          const loginButtons = document.querySelectorAll('button[type="submit"]');
+          loginButtons.forEach(function(btn) {
+            if (btn.textContent && (btn.textContent.includes('Entrar') || btn.textContent.includes('Fazer Login'))) {
+              btn.addEventListener('click', function() {
+                window.dataLayer.push({
+                  'event': 'loginFormSubmit',
+                  'buttonText': btn.textContent.trim(),
+                  'formName': 'Login'
+                });
+                console.log('Evento loginFormSubmit enviado ao GTM');
+              });
+            }
+          });
+          
+          // Track PDF download buttons
+          const downloadButtons = document.querySelectorAll('button');
+          downloadButtons.forEach(function(btn) {
+            if (btn.textContent && btn.textContent.includes('Download')) {
+              btn.addEventListener('click', function() {
+                const pdfCard = btn.closest('.bg-white');
+                const pdfTitle = pdfCard ? pdfCard.querySelector('h3')?.textContent : 'Unknown';
+                window.dataLayer.push({
+                  'event': 'pdfDownload',
+                  'pdfTitle': pdfTitle,
+                  'buttonText': btn.textContent.trim()
+                });
+                console.log('Evento pdfDownload enviado ao GTM:', pdfTitle);
+              });
+            }
+          });
+          
+          // Track logout button clicks
+          const logoutButtons = document.querySelectorAll('button');
+          logoutButtons.forEach(function(btn) {
+            if (btn.textContent && (btn.textContent.includes('Sair') || btn.textContent.includes('Logout'))) {
+              btn.addEventListener('click', function() {
+                window.dataLayer.push({
+                  'event': 'userLogout',
+                  'buttonText': btn.textContent.trim()
+                });
+                console.log('Evento userLogout enviado ao GTM');
+              });
+            }
+          });
+        }, 1000); // Wait for React to render
+      });
+    </script>
+    <!-- End GTM Event Tracking Scripts -->
   </body>
 </html>
