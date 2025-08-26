@@ -62,7 +62,7 @@ const Login = () => {
   return <div className="min-h-screen bg-login-background flex items-center justify-center p-4">
       <div className="w-full max-w-md">
         <div className="text-center mb-8">
-          <h1 className="text-4xl font-big-shoulders font-bold text-login-accent mb-2">Base de Dados Científicos</h1>
+          <h1 className="text-4xl font-big-shoulders font-bold text-login-text mb-2">Base de Dados Científicos</h1>
           <p className="text-login-accent text-lg font-special-elite">Acervo especializado em pesquisas científicas sobre proteína de mosca-soldado-negra (BSF) para nutrição animal.</p>
         </div>
 
@@ -103,6 +103,11 @@ const Login = () => {
             Ao continuar, você concorda com nossos termos de uso
           </p>
         </div>
+
+        <footer className="flex justify-center items-center gap-8 mt-8 pb-6">
+          <img src="/lets-fly-logo.png" alt="Lets Fly Logo" className="h-16 w-auto" />
+          <img src="/comida-dragao-logo.png" alt="Comida Dragão Logo" className="h-16 w-auto" />
+        </footer>
       </div>
     </div>;
 };
