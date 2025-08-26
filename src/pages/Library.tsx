@@ -241,6 +241,25 @@ const Library = () => {
       </header>
 
       <main className="container mx-auto px-4 py-8">
+        {/* Logo Section */}
+        <div className="text-center mb-8">
+          <div className="flex justify-center items-center space-x-8 mb-6">
+            <img 
+              src="/lovable-uploads/d41f7ddc-765e-42c3-b070-023da437b740.png" 
+              alt="Lets Fly Logo" 
+              className="h-16 object-contain"
+            />
+            <img 
+              src="/lovable-uploads/dde49e41-d26a-4c0d-a782-0038de85ff71.png" 
+              alt="Comida Dragão Logo" 
+              className="h-16 object-contain"
+            />
+          </div>
+          <p className="text-muted-foreground text-lg max-w-3xl mx-auto">
+            Pesquise nosso acervo de estudos científicos sobre proteína de mosca-soldado-negra. Digite palavras-chave para facilitar a sua busca.
+          </p>
+        </div>
+
         {/* Search Bar */}
         <div className="max-w-2xl mx-auto mb-8">
           <div className="relative">
