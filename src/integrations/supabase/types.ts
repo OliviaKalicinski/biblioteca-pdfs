@@ -17,21 +17,21 @@ export type Database = {
       download_logs: {
         Row: {
           downloaded_at: string
+          file_name: string
           id: string
           lead_id: string
-          pdf_id: string
         }
         Insert: {
           downloaded_at?: string
+          file_name: string
           id?: string
           lead_id: string
-          pdf_id: string
         }
         Update: {
           downloaded_at?: string
+          file_name?: string
           id?: string
           lead_id?: string
-          pdf_id?: string
         }
         Relationships: [
           {
@@ -39,13 +39,6 @@ export type Database = {
             columns: ["lead_id"]
             isOneToOne: false
             referencedRelation: "leads"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "download_logs_pdf_id_fkey"
-            columns: ["pdf_id"]
-            isOneToOne: false
-            referencedRelation: "pdf_files"
             referencedColumns: ["id"]
           },
         ]
@@ -74,42 +67,6 @@ export type Database = {
           id?: string
           last_access?: string
           name?: string
-        }
-        Relationships: []
-      }
-      pdf_files: {
-        Row: {
-          category: string
-          created_at: string
-          description: string | null
-          download_count: number
-          file_size: string
-          file_url: string | null
-          id: string
-          title: string
-          updated_at: string
-        }
-        Insert: {
-          category: string
-          created_at?: string
-          description?: string | null
-          download_count?: number
-          file_size: string
-          file_url?: string | null
-          id?: string
-          title: string
-          updated_at?: string
-        }
-        Update: {
-          category?: string
-          created_at?: string
-          description?: string | null
-          download_count?: number
-          file_size?: string
-          file_url?: string | null
-          id?: string
-          title?: string
-          updated_at?: string
         }
         Relationships: []
       }
