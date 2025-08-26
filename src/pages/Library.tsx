@@ -37,6 +37,18 @@ const Library = () => {
     }
   }, [user, navigate]);
 
+  // Function to parse markdown-style bold text to JSX
+  const parseDescription = (text: string) => {
+    const parts = text.split(/(\*\*.*?\*\*)/);
+    return parts.map((part, index) => {
+      if (part.startsWith('**') && part.endsWith('**')) {
+        const boldText = part.slice(2, -2);
+        return <strong key={index}>{boldText}</strong>;
+      }
+      return part;
+    });
+  };
+
   // Mapping function for specific PDF descriptions
   const getSpecificDescription = (title: string): string => {
     const descriptions: { [key: string]: string } = {
@@ -275,7 +287,7 @@ const Library = () => {
                   {pdf.title}
                 </CardTitle>
                 <CardDescription className="text-sm">
-                  {pdf.description}
+                  {parseDescription(pdf.description)}
                 </CardDescription>
               </CardHeader>
               
