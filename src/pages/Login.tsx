@@ -105,7 +105,7 @@ const Login = () => {
         </div>
 
         <footer className="flex justify-center items-center gap-8 mt-8 pb-6">
-          <img src="/lovable-uploads/67799d3a-7a64-49be-9f04-a4d19e4b630f.png" alt="Lets Fly Logo" className="h-16 w-auto" />
+          <img src="/lovable-uploads/67799d3a-7a64-49be-9f04-a4d19e4b630f.png" alt="Lets Fly Logo" className="h-32 w-auto" />
           <img src="/lovable-uploads/750d7ff8-8eba-469b-b149-911788f0ee87.png" alt="Comida Dragão Logo" className="h-16 w-auto" />
         </footer>
       </div>
