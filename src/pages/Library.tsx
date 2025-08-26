@@ -232,14 +232,14 @@ const Library = () => {
   if (!user) return null;
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-muted via-background to-muted">
+    <div className="min-h-screen" style={{backgroundColor: '#FFFBED'}}>
       {/* Header */}
       <header className="bg-white/80 backdrop-blur-sm border-b border-border sticky top-0 z-50">
         <div className="container mx-auto px-4 py-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-4">
-              <h1 className="text-2xl font-bold bg-gradient-to-r from-primary to-primary-dark bg-clip-text text-transparent">
-                📚 Biblioteca PDF
+              <h1 className="text-2xl font-bold font-big-shoulders bg-gradient-to-r from-primary to-primary-dark bg-clip-text text-transparent">
+                Base de Dados Científicos
               </h1>
             </div>
             
