@@ -252,7 +252,7 @@ const Library = () => {
             <img 
               src="/lovable-uploads/dde49e41-d26a-4c0d-a782-0038de85ff71.png" 
               alt="Comida Dragão Logo" 
-              className="h-48 object-contain"
+              className="h-24 object-contain"
             />
           </div>
           <p className="font-special-elite text-lg max-w-3xl mx-auto" style={{ color: '#240746' }}>
@@ -280,7 +280,7 @@ const Library = () => {
           {filteredPDFs.map(pdf => <Card key={pdf.id} className="group hover:shadow-lg transition-all duration-300 transform hover:scale-[1.02] bg-white/80 backdrop-blur-sm border-border">
               <CardHeader className="pb-3">
                 
-                <CardTitle className="leading-tight transition-colors text-xl" style={{ color: '#240746' }}>
+                <CardTitle className="leading-tight transition-colors text-xl" style={{ color: '#0B9265' }}>
                   {pdf.title}
                 </CardTitle>
                 <CardDescription className="text-sm" style={{ color: '#240746' }}>
