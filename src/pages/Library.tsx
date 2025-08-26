@@ -221,8 +221,8 @@ const Library = () => {
         <div className="container mx-auto px-4 py-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-4">
-              <h1 className="font-bold bg-gradient-to-r from-primary to-primary-dark bg-clip-text text-3xl text-[#240746]">
-                📚 Biblioteca PDF
+              <h1 className="font-big-shoulders font-bold text-3xl" style={{ color: '#0B9265' }}>
+                Acervo de Estudos Acadêmicos - BSF
               </h1>
             </div>
             
