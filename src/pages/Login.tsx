@@ -6,28 +6,30 @@ import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/contexts/AuthContext";
-
 const Login = () => {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const navigate = useNavigate();
-  const { toast } = useToast();
-  const { login, user, isLoading } = useAuth();
-
+  const {
+    toast
+  } = useToast();
+  const {
+    login,
+    user,
+    isLoading
+  } = useAuth();
   useEffect(() => {
     if (user) {
       navigate("/biblioteca");
     }
   }, [user, navigate]);
-
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
     if (!name.trim() || !email.trim()) {
       toast({
         variant: "destructive",
         title: "Campos obrigatórios",
-        description: "Por favor, preencha todos os campos.",
+        description: "Por favor, preencha todos os campos."
       });
       return;
     }
@@ -38,38 +40,30 @@ const Login = () => {
       toast({
         variant: "destructive",
         title: "Email inválido",
-        description: "Por favor, insira um email válido.",
+        description: "Por favor, insira um email válido."
       });
       return;
     }
-
     const result = await login(name, email);
-    
     if (result.success) {
       toast({
         title: "Login realizado com sucesso!",
-        description: `Bem-vindo(a), ${name}!`,
+        description: `Bem-vindo(a), ${name}!`
       });
       navigate("/biblioteca");
     } else {
       toast({
         variant: "destructive",
         title: "Erro no login",
-        description: result.error || "Ocorreu um erro inesperado.",
+        description: result.error || "Ocorreu um erro inesperado."
       });
     }
   };
-
-  return (
-    <div className="min-h-screen bg-gradient-to-br from-primary via-primary-dark to-primary-dark flex items-center justify-center p-4">
+  return <div className="min-h-screen bg-gradient-to-br from-primary via-primary-dark to-primary-dark flex items-center justify-center p-4">
       <div className="w-full max-w-md">
         <div className="text-center mb-8">
-          <h1 className="text-4xl font-bold text-white mb-2">
-            📚 Biblioteca
-          </h1>
-          <p className="text-white/90 text-lg">
-            Acesse nossa coleção exclusiva de PDFs
-          </p>
+          <h1 className="text-4xl font-bold text-white mb-2">Base de Dados Científicos</h1>
+          <p className="text-white/90 text-lg">Acervo especializado em pesquisas científicas sobre proteína de mosca-soldado-negra (BSF) para nutrição animal.</p>
         </div>
 
         <Card className="shadow-2xl border-0">
@@ -87,37 +81,17 @@ const Login = () => {
                 <Label htmlFor="name" className="text-sm font-medium">
                   Nome Completo
                 </Label>
-                <Input
-                  id="name"
-                  type="text"
-                  placeholder="Digite seu nome completo"
-                  value={name}
-                  onChange={(e) => setName(e.target.value)}
-                  className="h-11 bg-input border-border focus:ring-primary focus:border-primary"
-                  required
-                />
+                <Input id="name" type="text" placeholder="Digite seu nome completo" value={name} onChange={e => setName(e.target.value)} className="h-11 bg-input border-border focus:ring-primary focus:border-primary" required />
               </div>
               
               <div className="space-y-2">
                 <Label htmlFor="email" className="text-sm font-medium">
                   E-mail
                 </Label>
-                <Input
-                  id="email"
-                  type="email"
-                  placeholder="Digite seu e-mail"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  className="h-11 bg-input border-border focus:ring-primary focus:border-primary"
-                  required
-                />
+                <Input id="email" type="email" placeholder="Digite seu e-mail" value={email} onChange={e => setEmail(e.target.value)} className="h-11 bg-input border-border focus:ring-primary focus:border-primary" required />
               </div>
 
-              <Button 
-                type="submit" 
-                className="w-full h-11 bg-gradient-to-r from-primary to-primary-dark hover:from-primary-dark hover:to-primary text-white font-semibold shadow-lg hover:shadow-xl transition-all duration-200 transform hover:scale-[1.02]"
-                disabled={isLoading}
-              >
+              <Button type="submit" className="w-full h-11 bg-gradient-to-r from-primary to-primary-dark hover:from-primary-dark hover:to-primary text-white font-semibold shadow-lg hover:shadow-xl transition-all duration-200 transform hover:scale-[1.02]" disabled={isLoading}>
                 {isLoading ? "Acessando..." : "Acessar Biblioteca"}
               </Button>
             </form>
@@ -130,8 +104,6 @@ const Login = () => {
           </p>
         </div>
       </div>
-    </div>
-  );
+    </div>;
 };
-
 export default Login;
