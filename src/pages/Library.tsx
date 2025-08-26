@@ -138,7 +138,7 @@ const Library = () => {
         .from("download_logs")
         .insert({
           lead_id: user.id,
-          pdf_id: pdf.id
+          file_name: pdf.file_name
         });
 
       // Update local state download count
