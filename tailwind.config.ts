@@ -62,6 +62,8 @@ export default {
 					DEFAULT: 'hsl(var(--login-accent))',
 					foreground: 'hsl(var(--login-accent-foreground))'
 				},
+				'login-field-bg': 'hsl(var(--login-field-bg))',
+				'login-text': 'hsl(var(--login-text))',
 				sidebar: {
 					DEFAULT: 'hsl(var(--sidebar-background))',
 					foreground: 'hsl(var(--sidebar-foreground))',

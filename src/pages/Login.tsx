@@ -68,30 +68,30 @@ const Login = () => {
 
         <Card className="shadow-2xl border-0">
           <CardHeader className="text-center">
-            <CardTitle className="text-2xl font-bold text-foreground font-special-elite">
+            <CardTitle className="text-2xl font-bold text-login-text font-special-elite">
               Acessar Biblioteca
             </CardTitle>
-            <CardDescription className="font-special-elite">
+            <CardDescription className="text-login-text font-special-elite">
               Preencha seus dados para continuar
             </CardDescription>
           </CardHeader>
           <CardContent>
             <form onSubmit={handleSubmit} className="space-y-6">
               <div className="space-y-2">
-                <Label htmlFor="name" className="text-sm font-medium font-special-elite">
+                <Label htmlFor="name" className="text-sm font-medium text-login-text font-special-elite">
                   Nome Completo
                 </Label>
-                <Input id="name" type="text" placeholder="Digite seu nome completo" value={name} onChange={e => setName(e.target.value)} className="h-11 bg-input border-border focus:ring-primary focus:border-primary font-special-elite" required />
+                <Input id="name" type="text" placeholder="Digite seu nome completo" value={name} onChange={e => setName(e.target.value)} className="h-11 bg-login-field-bg border-border focus:ring-primary focus:border-primary font-special-elite" required />
               </div>
               
               <div className="space-y-2">
-                <Label htmlFor="email" className="text-sm font-medium font-special-elite">
+                <Label htmlFor="email" className="text-sm font-medium text-login-text font-special-elite">
                   E-mail
                 </Label>
-                <Input id="email" type="email" placeholder="Digite seu e-mail" value={email} onChange={e => setEmail(e.target.value)} className="h-11 bg-input border-border focus:ring-primary focus:border-primary font-special-elite" required />
+                <Input id="email" type="email" placeholder="Digite seu e-mail" value={email} onChange={e => setEmail(e.target.value)} className="h-11 bg-login-field-bg border-border focus:ring-primary focus:border-primary font-special-elite" required />
               </div>
 
-              <Button type="submit" className="w-full h-11 bg-gradient-to-r from-primary to-primary-dark hover:from-primary-dark hover:to-primary text-white font-semibold shadow-lg hover:shadow-xl transition-all duration-200 transform hover:scale-[1.02]" disabled={isLoading}>
+              <Button type="submit" className="w-full h-11 bg-login-accent hover:bg-login-accent/90 text-white font-semibold font-special-elite shadow-lg hover:shadow-xl transition-all duration-200 transform hover:scale-[1.02]" disabled={isLoading}>
                 {isLoading ? "Acessando..." : "Acessar Biblioteca"}
               </Button>
             </form>
