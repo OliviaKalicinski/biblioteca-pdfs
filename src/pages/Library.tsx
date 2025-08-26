@@ -139,7 +139,7 @@ const Library = () => {
         .insert({
           lead_id: user.id,
           file_name: pdf.file_name
-        });
+        } as any);
 
       // Update local state download count
       setPdfs(prev => 
