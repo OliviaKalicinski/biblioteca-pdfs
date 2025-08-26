@@ -22,6 +22,11 @@ All colors MUST be HSL.
     --primary-foreground: 0 0% 100%;
     --primary-dark: 260 35% 43%; /* #764ba2 */
     
+    /* Login page colors */
+    --login-background: 55 100% 97%; /* #FFFBED */
+    --login-accent: 155 84% 32%; /* #0B9265 */
+    --login-accent-foreground: 0 0% 100%;
+    
     --secondary: 210 40% 96.1%;
     --secondary-foreground: 222.2 47.4% 11.2%;
 

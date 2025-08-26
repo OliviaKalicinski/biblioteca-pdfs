@@ -57,6 +57,11 @@ export default {
 					DEFAULT: 'hsl(var(--card))',
 					foreground: 'hsl(var(--card-foreground))'
 				},
+				'login-background': 'hsl(var(--login-background))',
+				'login-accent': {
+					DEFAULT: 'hsl(var(--login-accent))',
+					foreground: 'hsl(var(--login-accent-foreground))'
+				},
 				sidebar: {
 					DEFAULT: 'hsl(var(--sidebar-background))',
 					foreground: 'hsl(var(--sidebar-foreground))',
@@ -67,6 +72,11 @@ export default {
 					border: 'hsl(var(--sidebar-border))',
 					ring: 'hsl(var(--sidebar-ring))'
 				}
+			},
+			fontFamily: {
+				sans: ["Inter", "sans-serif"],
+				"big-shoulders": ["Big Shoulders Stencil Display", "cursive"],
+				"special-elite": ["Special Elite", "cursive"],
 			},
 			borderRadius: {
 				lg: 'var(--radius)',
