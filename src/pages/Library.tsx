@@ -8,7 +8,6 @@ import { useToast } from "@/hooks/use-toast";
 import { Search, Download, FileText, LogOut, User } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
-
 interface PDFFile {
   id: string;
   title: string;
@@ -20,16 +19,19 @@ interface PDFFile {
   created_at: string;
   file_name: string;
 }
-
 const Library = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [filteredPDFs, setFilteredPDFs] = useState<PDFFile[]>([]);
   const [pdfs, setPdfs] = useState<PDFFile[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
-  const { toast } = useToast();
-  const { user, logout } = useAuth();
-
+  const {
+    toast
+  } = useToast();
+  const {
+    user,
+    logout
+  } = useAuth();
   useEffect(() => {
     if (!user) {
       navigate("/");
@@ -51,7 +53,9 @@ const Library = () => {
 
   // Mapping function for specific PDF descriptions
   const getSpecificDescription = (title: string): string => {
-    const descriptions: { [key: string]: string } = {
+    const descriptions: {
+      [key: string]: string;
+    } = {
       'Americans Acceptance Of Black Soldier Fly Larvae As Food': '**Estudo com 391 americanos** sobre aceitação de BSF como alimento e ração pet. **Resultado:** BSFL são vistas como eficientes, nutritivas e ecológicas. **Forma ideal:** Farinha (maior aceitação). **Sabor:** Comparado à gordura de pato/frango.',
       'Impact Of Insect Meal On Dog Food Allergy Case Report': '**Caso clínico:** Beagle de 5 anos com alergia alimentar. **Resultado:** Farinha de BSFL eliminou manifestações gastrointestinais em 12 dias. **Conclusão:** Opção promissora e viável para manejo de alergias alimentares caninas.',
       'An Assessment Of The Impact Of Insect Meal In Dry Food On A Dog With A Food Allergy A Case Report': '**Caso clínico:** Beagle de 5 anos com alergia alimentar. **Resultado:** Farinha de BSFL eliminou manifestações gastrointestinais em 12 dias. **Conclusão:** Opção promissora e viável para manejo de alergias alimentares caninas.',
@@ -84,48 +88,43 @@ const Library = () => {
       'Review Of Black Soldier Fly Hermetia Illucens As Animal Feed And Human Food': '**Revisão abrangente:** BSF como ração animal e alimento humano (40,8% proteína, 28,6% gordura média). **Aplicação:** Especialmente eficaz para peixes carnívoros. **Desafios:** Restrições legais regionais e estigmas sociais sobre consumo de insetos.',
       'Review Of BSF As Animal Feed And Human Food': '**Revisão abrangente:** BSF como ração animal e alimento humano (40,8% proteína, 28,6% gordura média). **Aplicação:** Especialmente eficaz para peixes carnívoros. **Desafios:** Restrições legais regionais e estigmas sociais sobre consumo de insetos.'
     };
-
     return descriptions[title] || `PDF científico sobre ${title.toLowerCase().includes('black soldier') ? 'black soldier fly' : 'pesquisa científica'}`;
   };
-
   useEffect(() => {
     const fetchPDFs = async () => {
       try {
         // Fetch files from storage bucket
-        const { data: storageFiles, error: storageError } = await supabase.storage
-          .from("PDF Library")
-          .list();
-
+        const {
+          data: storageFiles,
+          error: storageError
+        } = await supabase.storage.from("PDF Library").list();
         if (storageError) throw storageError;
 
         // Transform storage files into our PDFFile format
         const transformedFiles: PDFFile[] = storageFiles.map((file, index) => {
           const fileName = file.name.replace('.pdf', '');
           const sizeInMB = (file.metadata?.size / (1024 * 1024)).toFixed(1) + ' MB';
-          
+
           // Generate public URL for the file
-          const { data: { publicUrl } } = supabase.storage
-            .from("PDF Library")
-            .getPublicUrl(file.name);
-
+          const {
+            data: {
+              publicUrl
+            }
+          } = supabase.storage.from("PDF Library").getPublicUrl(file.name);
           const title = fileName.replace(/-/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
-
           return {
             id: file.id || `storage-${index}`,
             title,
             description: getSpecificDescription(title),
-            category: fileName.includes('nutrition') || fileName.includes('digestibility') ? 'Nutrição' : 
-                     fileName.includes('protein') ? 'Proteína' : 
-                     fileName.includes('food') || fileName.includes('feed') ? 'Alimentação' :
-                     'Pesquisa',
+            category: fileName.includes('nutrition') || fileName.includes('digestibility') ? 'Nutrição' : fileName.includes('protein') ? 'Proteína' : fileName.includes('food') || fileName.includes('feed') ? 'Alimentação' : 'Pesquisa',
             file_size: sizeInMB,
-            download_count: Math.floor(Math.random() * 50), // Mock download count for now
+            download_count: Math.floor(Math.random() * 50),
+            // Mock download count for now
             file_url: publicUrl,
             created_at: file.created_at || new Date().toISOString(),
             file_name: file.name
           };
         }).filter(file => file.file_name.endsWith('.pdf'));
-
         setPdfs(transformedFiles);
         setFilteredPDFs(transformedFiles);
       } catch (error) {
@@ -133,50 +132,42 @@ const Library = () => {
         toast({
           variant: "destructive",
           title: "Erro ao carregar PDFs",
-          description: "Ocorreu um erro ao carregar a biblioteca.",
+          description: "Ocorreu um erro ao carregar a biblioteca."
         });
       }
     };
-
     if (user) {
       fetchPDFs();
     }
   }, [user, toast]);
-
   useEffect(() => {
     // Filter PDFs based on search term
-    const filtered = pdfs.filter(pdf =>
-      pdf.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      (pdf.description && pdf.description.toLowerCase().includes(searchTerm.toLowerCase())) ||
-      pdf.category.toLowerCase().includes(searchTerm.toLowerCase())
-    );
+    const filtered = pdfs.filter(pdf => pdf.title.toLowerCase().includes(searchTerm.toLowerCase()) || pdf.description && pdf.description.toLowerCase().includes(searchTerm.toLowerCase()) || pdf.category.toLowerCase().includes(searchTerm.toLowerCase()));
     setFilteredPDFs(filtered);
   }, [searchTerm, pdfs]);
-
   const handleLogout = () => {
     logout();
     toast({
       title: "Logout realizado",
-      description: "Até a próxima!",
+      description: "Até a próxima!"
     });
     navigate("/");
   };
-
   const handleDownload = async (pdf: PDFFile) => {
     if (!user) return;
-    
     setIsLoading(true);
-    
     try {
       // Download the actual file from storage
-      const { data: fileData, error: downloadError } = await supabase.storage
-        .from("PDF Library")
-        .download(pdf.file_name);
-
+      const {
+        data: fileData,
+        error: downloadError
+      } = await supabase.storage.from("PDF Library").download(pdf.file_name);
       if (downloadError) throw downloadError;
 
       // Create blob and download link
-      const blob = new Blob([fileData], { type: 'application/pdf' });
+      const blob = new Blob([fileData], {
+        type: 'application/pdf'
+      });
       const url = window.URL.createObjectURL(blob);
       const link = document.createElement('a');
       link.href = url;
@@ -187,40 +178,35 @@ const Library = () => {
       window.URL.revokeObjectURL(url);
 
       // Log the download
-      await supabase
-        .from("download_logs")
-        .insert({
-          lead_id: user.id,
-          file_name: pdf.file_name
-        } as any);
+      await supabase.from("download_logs").insert({
+        lead_id: user.id,
+        file_name: pdf.file_name
+      } as any);
 
       // Update local state download count
-      setPdfs(prev => 
-        prev.map(p => 
-          p.id === pdf.id 
-            ? { ...p, download_count: p.download_count + 1 }
-            : p
-        )
-      );
-
+      setPdfs(prev => prev.map(p => p.id === pdf.id ? {
+        ...p,
+        download_count: p.download_count + 1
+      } : p));
       toast({
         title: "Download realizado!",
-        description: `${pdf.title} foi baixado com sucesso.`,
+        description: `${pdf.title} foi baixado com sucesso.`
       });
     } catch (error) {
       console.error("Error downloading PDF:", error);
       toast({
         variant: "destructive",
         title: "Erro no download",
-        description: "Ocorreu um erro ao baixar o arquivo.",
+        description: "Ocorreu um erro ao baixar o arquivo."
       });
     } finally {
       setIsLoading(false);
     }
   };
-
   const getCategoryColor = (category: string) => {
-    const colors: { [key: string]: string } = {
+    const colors: {
+      [key: string]: string;
+    } = {
       'Nutrição': 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200',
       'Proteína': 'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200',
       'Alimentação': 'bg-orange-100 text-orange-800 dark:bg-orange-900 dark:text-orange-200',
@@ -228,18 +214,15 @@ const Library = () => {
     };
     return colors[category] || 'bg-gray-100 text-gray-800 dark:bg-gray-900 dark:text-gray-200';
   };
-
   if (!user) return null;
-
-  return (
-    <div className="min-h-screen" style={{backgroundColor: '#FFFBED'}}>
+  return <div className="min-h-screen bg-gradient-to-br from-muted via-background to-muted">
       {/* Header */}
       <header className="bg-white/80 backdrop-blur-sm border-b border-border sticky top-0 z-50">
         <div className="container mx-auto px-4 py-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-4">
-              <h1 className="text-2xl font-bold font-big-shoulders bg-gradient-to-r from-primary to-primary-dark bg-clip-text text-transparent">
-                Base de Dados Científicos
+              <h1 className="font-bold bg-gradient-to-r from-primary to-primary-dark bg-clip-text text-3xl text-[#240746]">
+                📚 Biblioteca PDF
               </h1>
             </div>
             
@@ -248,12 +231,7 @@ const Library = () => {
                 <User className="h-4 w-4" />
                 <span>Olá, <strong>{user.name}</strong></span>
               </div>
-              <Button 
-                variant="outline" 
-                size="sm"
-                onClick={handleLogout}
-                className="flex items-center space-x-2"
-              >
+              <Button variant="outline" size="sm" onClick={handleLogout} className="flex items-center space-x-2">
                 <LogOut className="h-4 w-4" />
                 <span>Sair</span>
               </Button>
@@ -267,38 +245,23 @@ const Library = () => {
         <div className="max-w-2xl mx-auto mb-8">
           <div className="relative">
             <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
-            <Input
-              type="search"
-              placeholder="Pesquisar PDFs por título, descrição ou categoria..."
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              className="pl-10 h-12 bg-white/80 backdrop-blur-sm border-border focus:ring-primary focus:border-primary"
-            />
+            <Input type="search" placeholder="Pesquisar PDFs por título, descrição ou categoria..." value={searchTerm} onChange={e => setSearchTerm(e.target.value)} className="pl-10 h-12 bg-white/80 backdrop-blur-sm border-border focus:ring-primary focus:border-primary" />
           </div>
         </div>
 
         {/* Stats */}
         <div className="text-center mb-8">
           <p className="text-muted-foreground">
-            {filteredPDFs.length === pdfs.length 
-              ? `${pdfs.length} PDFs disponíveis` 
-              : `${filteredPDFs.length} de ${pdfs.length} PDFs encontrados`
-            }
+            {filteredPDFs.length === pdfs.length ? `${pdfs.length} PDFs disponíveis` : `${filteredPDFs.length} de ${pdfs.length} PDFs encontrados`}
           </p>
         </div>
 
         {/* PDF Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {filteredPDFs.map((pdf) => (
-            <Card key={pdf.id} className="group hover:shadow-lg transition-all duration-300 transform hover:scale-[1.02] bg-white/80 backdrop-blur-sm border-border">
+          {filteredPDFs.map(pdf => <Card key={pdf.id} className="group hover:shadow-lg transition-all duration-300 transform hover:scale-[1.02] bg-white/80 backdrop-blur-sm border-border">
               <CardHeader className="pb-3">
-                <div className="flex items-start justify-between mb-2">
-                  <FileText className="h-8 w-8 text-primary flex-shrink-0" />
-                  <Badge variant="secondary" className={getCategoryColor(pdf.category)}>
-                    {pdf.category}
-                  </Badge>
-                </div>
-                <CardTitle className="text-lg leading-tight group-hover:text-primary transition-colors">
+                
+                <CardTitle className="leading-tight transition-colors text-xl text-[#0b9265]">
                   {pdf.title}
                 </CardTitle>
                 <CardDescription className="text-sm">
@@ -315,31 +278,22 @@ const Library = () => {
                   </span>
                 </div>
                 
-                <Button 
-                  onClick={() => handleDownload(pdf)}
-                  disabled={isLoading}
-                  className="w-full bg-gradient-to-r from-success to-success/90 hover:from-success/90 hover:to-success text-white font-medium shadow-md hover:shadow-lg transition-all duration-200"
-                >
+                <Button onClick={() => handleDownload(pdf)} disabled={isLoading} className="w-full bg-gradient-to-r from-success to-success/90 hover:from-success/90 hover:to-success text-white font-medium shadow-md hover:shadow-lg transition-all duration-200 bg-[#0b9265]">
                   <Download className="h-4 w-4 mr-2" />
                   {isLoading ? "Baixando..." : "Baixar PDF"}
                 </Button>
               </CardContent>
-            </Card>
-          ))}
+            </Card>)}
         </div>
 
-        {filteredPDFs.length === 0 && searchTerm && (
-          <div className="text-center py-12">
+        {filteredPDFs.length === 0 && searchTerm && <div className="text-center py-12">
             <FileText className="h-16 w-16 text-muted-foreground mx-auto mb-4" />
             <h3 className="text-lg font-semibold mb-2">Nenhum PDF encontrado</h3>
             <p className="text-muted-foreground">
               Tente usar outros termos de busca
             </p>
-          </div>
-        )}
+          </div>}
       </main>
-    </div>
-  );
+    </div>;
 };
-
 export default Library;
