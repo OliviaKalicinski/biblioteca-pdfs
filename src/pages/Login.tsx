@@ -1,17 +1,24 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { useToast } from "@/hooks/use-toast";
+import { useAuth } from "@/contexts/AuthContext";
 
 const Login = () => {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
-  const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
   const { toast } = useToast();
+  const { login, user, isLoading } = useAuth();
+
+  useEffect(() => {
+    if (user) {
+      navigate("/biblioteca");
+    }
+  }, [user, navigate]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -36,21 +43,21 @@ const Login = () => {
       return;
     }
 
-    setIsLoading(true);
-
-    // Simulate login process
-    setTimeout(() => {
-      // Store user data for now (will integrate with Supabase later)
-      const userData = { name, email, loginTime: new Date().toISOString() };
-      localStorage.setItem("pdfLibraryUser", JSON.stringify(userData));
-      
+    const result = await login(name, email);
+    
+    if (result.success) {
       toast({
         title: "Login realizado com sucesso!",
         description: `Bem-vindo(a), ${name}!`,
       });
-      
       navigate("/biblioteca");
-    }, 1000);
+    } else {
+      toast({
+        variant: "destructive",
+        title: "Erro no login",
+        description: result.error || "Ocorreu um erro inesperado.",
+      });
+    }
   };
 
   return (

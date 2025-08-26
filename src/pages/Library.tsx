@@ -6,90 +6,75 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Badge } from "@/components/ui/badge";
 import { useToast } from "@/hooks/use-toast";
 import { Search, Download, FileText, LogOut, User } from "lucide-react";
+import { useAuth } from "@/contexts/AuthContext";
+import { supabase } from "@/integrations/supabase/client";
 
-// Mock PDF data (will be replaced with Supabase data)
-const mockPDFs = [
-  {
-    id: "1",
-    title: "Guia Completo de Marketing Digital",
-    description: "Estratégias avançadas para crescer sua marca online",
-    category: "Marketing",
-    downloadCount: 1247,
-    fileSize: "2.5 MB"
-  },
-  {
-    id: "2", 
-    title: "Produtividade Máxima em 2024",
-    description: "Técnicas comprovadas para otimizar seu tempo",
-    category: "Produtividade",
-    downloadCount: 892,
-    fileSize: "1.8 MB"
-  },
-  {
-    id: "3",
-    title: "Design System Moderno",
-    description: "Como criar interfaces consistentes e escaláveis", 
-    category: "Design",
-    downloadCount: 654,
-    fileSize: "3.1 MB"
-  },
-  {
-    id: "4",
-    title: "Finanças Pessoais Inteligentes",
-    description: "Controle suas finanças e construa riqueza",
-    category: "Finanças", 
-    downloadCount: 1532,
-    fileSize: "2.2 MB"
-  },
-  {
-    id: "5",
-    title: "Apresentações que Convencem",
-    description: "Técnicas de persuasão para suas apresentações",
-    category: "Apresentação",
-    downloadCount: 423,
-    fileSize: "1.5 MB"
-  },
-  {
-    id: "6",
-    title: "Estratégias de Growth Hacking",
-    description: "Crescimento exponencial com recursos limitados",
-    category: "Marketing", 
-    downloadCount: 789,
-    fileSize: "2.8 MB"
-  }
-];
+interface PDFFile {
+  id: string;
+  title: string;
+  description: string | null;
+  category: string;
+  file_size: string;
+  download_count: number;
+  file_url: string | null;
+  created_at: string;
+  updated_at: string;
+}
 
 const Library = () => {
-  const [user, setUser] = useState<{ name: string; email: string } | null>(null);
   const [searchTerm, setSearchTerm] = useState("");
-  const [filteredPDFs, setFilteredPDFs] = useState(mockPDFs);
+  const [filteredPDFs, setFilteredPDFs] = useState<PDFFile[]>([]);
+  const [pdfs, setPdfs] = useState<PDFFile[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
   const { toast } = useToast();
+  const { user, logout } = useAuth();
 
   useEffect(() => {
-    // Check if user is logged in
-    const userData = localStorage.getItem("pdfLibraryUser");
-    if (!userData) {
+    if (!user) {
       navigate("/");
       return;
     }
-    
-    setUser(JSON.parse(userData));
-  }, [navigate]);
+  }, [user, navigate]);
+
+  useEffect(() => {
+    const fetchPDFs = async () => {
+      try {
+        const { data, error } = await supabase
+          .from("pdf_files")
+          .select("*")
+          .order("created_at", { ascending: false });
+
+        if (error) throw error;
+        setPdfs(data || []);
+        setFilteredPDFs(data || []);
+      } catch (error) {
+        console.error("Error fetching PDFs:", error);
+        toast({
+          variant: "destructive",
+          title: "Erro ao carregar PDFs",
+          description: "Ocorreu um erro ao carregar a biblioteca.",
+        });
+      }
+    };
+
+    if (user) {
+      fetchPDFs();
+    }
+  }, [user, toast]);
 
   useEffect(() => {
     // Filter PDFs based on search term
-    const filtered = mockPDFs.filter(pdf => 
+    const filtered = pdfs.filter(pdf =>
       pdf.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      pdf.description.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      (pdf.description && pdf.description.toLowerCase().includes(searchTerm.toLowerCase())) ||
       pdf.category.toLowerCase().includes(searchTerm.toLowerCase())
     );
     setFilteredPDFs(filtered);
-  }, [searchTerm]);
+  }, [searchTerm, pdfs]);
 
   const handleLogout = () => {
-    localStorage.removeItem("pdfLibraryUser");
+    logout();
     toast({
       title: "Logout realizado",
       description: "Até a próxima!",
@@ -97,23 +82,53 @@ const Library = () => {
     navigate("/");
   };
 
-  const handleDownload = async (pdf: any) => {
+  const handleDownload = async (pdf: PDFFile) => {
+    if (!user) return;
+    
     setIsLoading(true);
     
-    // Simulate download process
-    setTimeout(() => {
-      toast({
-        title: "Download iniciado!",
-        description: `${pdf.title} está sendo baixado.`,
-      });
-      setIsLoading(false);
-      
-      // Increment download count (will be handled by Supabase later)
-      const updatedPDFs = filteredPDFs.map(p => 
-        p.id === pdf.id ? { ...p, downloadCount: p.downloadCount + 1 } : p
+    try {
+      // Log the download
+      await supabase
+        .from("download_logs")
+        .insert({
+          lead_id: user.id,
+          pdf_id: pdf.id
+        });
+
+      // Update download count
+      const { error } = await supabase
+        .from("pdf_files")
+        .update({ 
+          download_count: pdf.download_count + 1 
+        })
+        .eq("id", pdf.id);
+
+      if (error) throw error;
+
+      // Update local state
+      setPdfs(prev => 
+        prev.map(p => 
+          p.id === pdf.id 
+            ? { ...p, download_count: p.download_count + 1 }
+            : p
+        )
       );
-      setFilteredPDFs(updatedPDFs);
-    }, 500);
+
+      toast({
+        title: "Download registrado!",
+        description: `${pdf.title} foi registrado como baixado.`,
+      });
+    } catch (error) {
+      console.error("Error logging download:", error);
+      toast({
+        variant: "destructive",
+        title: "Erro no download",
+        description: "Ocorreu um erro ao registrar o download.",
+      });
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   const getCategoryColor = (category: string) => {
@@ -178,9 +193,9 @@ const Library = () => {
         {/* Stats */}
         <div className="text-center mb-8">
           <p className="text-muted-foreground">
-            {filteredPDFs.length === mockPDFs.length 
-              ? `${mockPDFs.length} PDFs disponíveis` 
-              : `${filteredPDFs.length} de ${mockPDFs.length} PDFs encontrados`
+            {filteredPDFs.length === pdfs.length 
+              ? `${pdfs.length} PDFs disponíveis` 
+              : `${filteredPDFs.length} de ${pdfs.length} PDFs encontrados`
             }
           </p>
         </div>
@@ -206,10 +221,10 @@ const Library = () => {
               
               <CardContent className="pt-0">
                 <div className="flex items-center justify-between text-sm text-muted-foreground mb-4">
-                  <span>{pdf.fileSize}</span>
+                  <span>{pdf.file_size}</span>
                   <span className="flex items-center space-x-1">
                     <Download className="h-3 w-3" />
-                    <span>{pdf.downloadCount.toLocaleString()}</span>
+                    <span>{pdf.download_count.toLocaleString()}</span>
                   </span>
                 </div>
                 
