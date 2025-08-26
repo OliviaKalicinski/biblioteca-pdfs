@@ -289,21 +289,36 @@ const Library = () => {
 
         {/* PDF Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {filteredPDFs.map((pdf) => (
+          {filteredPDFs.map((pdf, index) => (
             <Card key={pdf.id} className="group hover:shadow-lg transition-all duration-300 transform hover:scale-[1.02] bg-white/80 backdrop-blur-sm border-border">
               <CardHeader className="pb-3">
-                <div className="flex items-start justify-between mb-2">
-                  <FileText className="h-8 w-8 text-primary flex-shrink-0" />
-                  <Badge variant="secondary" className={getCategoryColor(pdf.category)}>
-                    {pdf.category}
-                  </Badge>
-                </div>
-                <CardTitle className="text-lg leading-tight group-hover:text-primary transition-colors">
-                  {pdf.title}
-                </CardTitle>
-                <CardDescription className="text-sm">
-                  {parseDescription(pdf.description)}
-                </CardDescription>
+                {index === 0 ? (
+                  // First PDF card - custom styling without icon and category
+                  <div className="mb-2">
+                    <CardTitle className="text-lg leading-tight font-big-shoulders font-bold" style={{ color: 'hsl(var(--pdf-title))' }}>
+                      {pdf.title}
+                    </CardTitle>
+                    <CardDescription className="text-sm font-special-elite" style={{ color: 'hsl(var(--pdf-description))' }}>
+                      {parseDescription(pdf.description)}
+                    </CardDescription>
+                  </div>
+                ) : (
+                  // Other PDF cards - keep original styling
+                  <>
+                    <div className="flex items-start justify-between mb-2">
+                      <FileText className="h-8 w-8 text-primary flex-shrink-0" />
+                      <Badge variant="secondary" className={getCategoryColor(pdf.category)}>
+                        {pdf.category}
+                      </Badge>
+                    </div>
+                    <CardTitle className="text-lg leading-tight group-hover:text-primary transition-colors">
+                      {pdf.title}
+                    </CardTitle>
+                    <CardDescription className="text-sm">
+                      {parseDescription(pdf.description)}
+                    </CardDescription>
+                  </>
+                )}
               </CardHeader>
               
               <CardContent className="pt-0">
@@ -318,7 +333,15 @@ const Library = () => {
                 <Button 
                   onClick={() => handleDownload(pdf)}
                   disabled={isLoading}
-                  className="w-full bg-gradient-to-r from-success to-success/90 hover:from-success/90 hover:to-success text-white font-medium shadow-md hover:shadow-lg transition-all duration-200"
+                  className={`w-full shadow-md hover:shadow-lg transition-all duration-200 ${
+                    index === 0 
+                      ? "font-big-shoulders font-bold text-white" 
+                      : "bg-gradient-to-r from-success to-success/90 hover:from-success/90 hover:to-success text-white font-medium"
+                  }`}
+                  style={index === 0 ? { 
+                    backgroundColor: 'hsl(var(--pdf-button))',
+                    color: 'hsl(var(--pdf-button-foreground))'
+                  } : undefined}
                 >
                   <Download className="h-4 w-4 mr-2" />
                   {isLoading ? "Baixando..." : "Baixar PDF"}
