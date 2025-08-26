@@ -12,13 +12,13 @@ import { supabase } from "@/integrations/supabase/client";
 interface PDFFile {
   id: string;
   title: string;
-  description: string | null;
+  description: string;
   category: string;
   file_size: string;
   download_count: number;
-  file_url: string | null;
+  file_url: string;
   created_at: string;
-  updated_at: string;
+  file_name: string;
 }
 
 const Library = () => {
@@ -40,14 +40,41 @@ const Library = () => {
   useEffect(() => {
     const fetchPDFs = async () => {
       try {
-        const { data, error } = await supabase
-          .from("pdf_files")
-          .select("*")
-          .order("created_at", { ascending: false });
+        // Fetch files from storage bucket
+        const { data: storageFiles, error: storageError } = await supabase.storage
+          .from("PDF Library")
+          .list();
 
-        if (error) throw error;
-        setPdfs(data || []);
-        setFilteredPDFs(data || []);
+        if (storageError) throw storageError;
+
+        // Transform storage files into our PDFFile format
+        const transformedFiles: PDFFile[] = storageFiles.map((file, index) => {
+          const fileName = file.name.replace('.pdf', '');
+          const sizeInMB = (file.metadata?.size / (1024 * 1024)).toFixed(1) + ' MB';
+          
+          // Generate public URL for the file
+          const { data: { publicUrl } } = supabase.storage
+            .from("PDF Library")
+            .getPublicUrl(file.name);
+
+          return {
+            id: file.id || `storage-${index}`,
+            title: fileName.replace(/-/g, ' ').replace(/\b\w/g, l => l.toUpperCase()),
+            description: `PDF científico sobre ${fileName.includes('black-soldier') ? 'black soldier fly' : 'pesquisa científica'}`,
+            category: fileName.includes('nutrition') || fileName.includes('digestibility') ? 'Nutrição' : 
+                     fileName.includes('protein') ? 'Proteína' : 
+                     fileName.includes('food') || fileName.includes('feed') ? 'Alimentação' :
+                     'Pesquisa',
+            file_size: sizeInMB,
+            download_count: Math.floor(Math.random() * 50), // Mock download count for now
+            file_url: publicUrl,
+            created_at: file.created_at || new Date().toISOString(),
+            file_name: file.name
+          };
+        }).filter(file => file.file_name.endsWith('.pdf'));
+
+        setPdfs(transformedFiles);
+        setFilteredPDFs(transformedFiles);
       } catch (error) {
         console.error("Error fetching PDFs:", error);
         toast({
@@ -88,6 +115,24 @@ const Library = () => {
     setIsLoading(true);
     
     try {
+      // Download the actual file from storage
+      const { data: fileData, error: downloadError } = await supabase.storage
+        .from("PDF Library")
+        .download(pdf.file_name);
+
+      if (downloadError) throw downloadError;
+
+      // Create blob and download link
+      const blob = new Blob([fileData], { type: 'application/pdf' });
+      const url = window.URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = pdf.title + '.pdf';
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      window.URL.revokeObjectURL(url);
+
       // Log the download
       await supabase
         .from("download_logs")
@@ -96,17 +141,7 @@ const Library = () => {
           pdf_id: pdf.id
         });
 
-      // Update download count
-      const { error } = await supabase
-        .from("pdf_files")
-        .update({ 
-          download_count: pdf.download_count + 1 
-        })
-        .eq("id", pdf.id);
-
-      if (error) throw error;
-
-      // Update local state
+      // Update local state download count
       setPdfs(prev => 
         prev.map(p => 
           p.id === pdf.id 
@@ -116,15 +151,15 @@ const Library = () => {
       );
 
       toast({
-        title: "Download registrado!",
-        description: `${pdf.title} foi registrado como baixado.`,
+        title: "Download realizado!",
+        description: `${pdf.title} foi baixado com sucesso.`,
       });
     } catch (error) {
-      console.error("Error logging download:", error);
+      console.error("Error downloading PDF:", error);
       toast({
         variant: "destructive",
         title: "Erro no download",
-        description: "Ocorreu um erro ao registrar o download.",
+        description: "Ocorreu um erro ao baixar o arquivo.",
       });
     } finally {
       setIsLoading(false);
@@ -133,11 +168,10 @@ const Library = () => {
 
   const getCategoryColor = (category: string) => {
     const colors: { [key: string]: string } = {
-      'Marketing': 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200',
-      'Produtividade': 'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200',
-      'Design': 'bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-200',
-      'Finanças': 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200',
-      'Apresentação': 'bg-orange-100 text-orange-800 dark:bg-orange-900 dark:text-orange-200'
+      'Nutrição': 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200',
+      'Proteína': 'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200',
+      'Alimentação': 'bg-orange-100 text-orange-800 dark:bg-orange-900 dark:text-orange-200',
+      'Pesquisa': 'bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-200'
     };
     return colors[category] || 'bg-gray-100 text-gray-800 dark:bg-gray-900 dark:text-gray-200';
   };
