@@ -14,7 +14,105 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      download_logs: {
+        Row: {
+          downloaded_at: string
+          id: string
+          lead_id: string
+          pdf_id: string
+        }
+        Insert: {
+          downloaded_at?: string
+          id?: string
+          lead_id: string
+          pdf_id: string
+        }
+        Update: {
+          downloaded_at?: string
+          id?: string
+          lead_id?: string
+          pdf_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "download_logs_lead_id_fkey"
+            columns: ["lead_id"]
+            isOneToOne: false
+            referencedRelation: "leads"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "download_logs_pdf_id_fkey"
+            columns: ["pdf_id"]
+            isOneToOne: false
+            referencedRelation: "pdf_files"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      leads: {
+        Row: {
+          access_count: number
+          created_at: string
+          email: string
+          id: string
+          last_access: string
+          name: string
+        }
+        Insert: {
+          access_count?: number
+          created_at?: string
+          email: string
+          id?: string
+          last_access?: string
+          name: string
+        }
+        Update: {
+          access_count?: number
+          created_at?: string
+          email?: string
+          id?: string
+          last_access?: string
+          name?: string
+        }
+        Relationships: []
+      }
+      pdf_files: {
+        Row: {
+          category: string
+          created_at: string
+          description: string | null
+          download_count: number
+          file_size: string
+          file_url: string | null
+          id: string
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          category: string
+          created_at?: string
+          description?: string | null
+          download_count?: number
+          file_size: string
+          file_url?: string | null
+          id?: string
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          category?: string
+          created_at?: string
+          description?: string | null
+          download_count?: number
+          file_size?: string
+          file_url?: string | null
+          id?: string
+          title?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
