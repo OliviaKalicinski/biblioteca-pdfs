@@ -215,7 +215,7 @@ const Library = () => {
     return colors[category] || 'bg-gray-100 text-gray-800 dark:bg-gray-900 dark:text-gray-200';
   };
   if (!user) return null;
-  return <div className="min-h-screen bg-gradient-to-br from-muted via-background to-muted">
+  return <div className="min-h-screen" style={{ backgroundColor: '#FFFBED' }}>
       {/* Header */}
       <header className="bg-white/80 backdrop-blur-sm border-b border-border sticky top-0 z-50">
         <div className="container mx-auto px-4 py-4">
@@ -247,15 +247,15 @@ const Library = () => {
             <img 
               src="/lovable-uploads/d41f7ddc-765e-42c3-b070-023da437b740.png" 
               alt="Lets Fly Logo" 
-              className="h-16 object-contain"
+              className="h-48 object-contain"
             />
             <img 
               src="/lovable-uploads/dde49e41-d26a-4c0d-a782-0038de85ff71.png" 
               alt="Comida Dragão Logo" 
-              className="h-16 object-contain"
+              className="h-48 object-contain"
             />
           </div>
-          <p className="text-muted-foreground text-lg max-w-3xl mx-auto">
+          <p className="font-special-elite text-lg max-w-3xl mx-auto" style={{ color: '#240746' }}>
             Pesquise nosso acervo de estudos científicos sobre proteína de mosca-soldado-negra. Digite palavras-chave para facilitar a sua busca.
           </p>
         </div>
@@ -280,16 +280,16 @@ const Library = () => {
           {filteredPDFs.map(pdf => <Card key={pdf.id} className="group hover:shadow-lg transition-all duration-300 transform hover:scale-[1.02] bg-white/80 backdrop-blur-sm border-border">
               <CardHeader className="pb-3">
                 
-                <CardTitle className="leading-tight transition-colors text-xl text-[#0b9265]">
+                <CardTitle className="leading-tight transition-colors text-xl" style={{ color: '#240746' }}>
                   {pdf.title}
                 </CardTitle>
-                <CardDescription className="text-sm">
+                <CardDescription className="text-sm" style={{ color: '#240746' }}>
                   {parseDescription(pdf.description)}
                 </CardDescription>
               </CardHeader>
               
               <CardContent className="pt-0">
-                <div className="flex items-center justify-between text-sm text-muted-foreground mb-4">
+                <div className="flex items-center justify-between text-sm mb-4" style={{ color: '#240746' }}>
                   <span>{pdf.file_size}</span>
                   <span className="flex items-center space-x-1">
                     <Download className="h-3 w-3" />
@@ -297,7 +297,16 @@ const Library = () => {
                   </span>
                 </div>
                 
-                <Button onClick={() => handleDownload(pdf)} disabled={isLoading} className="w-full bg-gradient-to-r from-success to-success/90 hover:from-success/90 hover:to-success text-white font-medium shadow-md hover:shadow-lg transition-all duration-200 bg-[#0b9265]">
+                <Button 
+                  onClick={() => handleDownload(pdf)} 
+                  disabled={isLoading} 
+                  className="w-full font-medium shadow-md hover:shadow-lg transition-all duration-200"
+                  style={{ 
+                    backgroundColor: '#C4FFE2', 
+                    color: '#240746',
+                    border: 'none'
+                  }}
+                >
                   <Download className="h-4 w-4 mr-2" />
                   {isLoading ? "Baixando..." : "Baixar PDF"}
                 </Button>
