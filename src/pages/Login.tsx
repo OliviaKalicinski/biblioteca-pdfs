@@ -6,18 +6,13 @@ import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/contexts/AuthContext";
+import { formatPhone, isValidPhone, getPhoneValidationError } from "@/lib/phone-utils";
 const Login = () => {
   const [name, setName] = useState("");
-  const [email, setEmail] = useState("");
+  const [phone, setPhone] = useState("");
   const navigate = useNavigate();
-  const {
-    toast
-  } = useToast();
-  const {
-    login,
-    user,
-    isLoading
-  } = useAuth();
+  const { toast } = useToast();
+  const { login, user, isLoading } = useAuth();
   useEffect(() => {
     if (user) {
       navigate("/biblioteca");
@@ -25,7 +20,8 @@ const Login = () => {
   }, [user, navigate]);
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!name.trim() || !email.trim()) {
+    
+    if (!name.trim() || !phone.trim()) {
       toast({
         variant: "destructive",
         title: "Campos obrigatórios",
@@ -34,17 +30,18 @@ const Login = () => {
       return;
     }
 
-    // Basic email validation
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!emailRegex.test(email)) {
+    // Validar telefone
+    const phoneError = getPhoneValidationError(phone);
+    if (phoneError) {
       toast({
         variant: "destructive",
-        title: "Email inválido",
-        description: "Por favor, insira um email válido."
+        title: "Telefone inválido",
+        description: phoneError
       });
       return;
     }
-    const result = await login(name, email);
+    
+    const result = await login(name, phone);
     if (result.success) {
       toast({
         title: "Login realizado com sucesso!",
@@ -58,6 +55,11 @@ const Login = () => {
         description: result.error || "Ocorreu um erro inesperado."
       });
     }
+  };
+
+  const handlePhoneChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const formatted = formatPhone(e.target.value);
+    setPhone(formatted);
   };
   return <div className="min-h-screen bg-login-background flex items-center justify-center p-4">
       <div className="w-full max-w-md">
@@ -85,10 +87,19 @@ const Login = () => {
               </div>
               
               <div className="space-y-2">
-                <Label htmlFor="email" className="text-sm font-medium text-login-text font-special-elite">
-                  E-mail
+                <Label htmlFor="phone" className="text-sm font-medium text-login-text font-special-elite">
+                  Telefone
                 </Label>
-                <Input id="email" type="email" placeholder="Digite seu e-mail" value={email} onChange={e => setEmail(e.target.value)} className="h-11 bg-login-field-bg border-border focus:ring-primary focus:border-primary font-special-elite" required />
+                <Input 
+                  id="phone" 
+                  type="tel" 
+                  placeholder="(00) 00000-0000" 
+                  value={phone} 
+                  onChange={handlePhoneChange}
+                  maxLength={15}
+                  className="h-11 bg-login-field-bg border-border focus:ring-primary focus:border-primary font-special-elite" 
+                  required 
+                />
               </div>
 
               <Button type="submit" className="w-full h-11 bg-login-accent hover:bg-login-accent/90 text-white font-semibold font-special-elite shadow-lg hover:shadow-xl transition-all duration-200 transform hover:scale-[1.02]" disabled={isLoading}>

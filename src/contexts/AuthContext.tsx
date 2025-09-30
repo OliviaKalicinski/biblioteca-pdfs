@@ -4,7 +4,7 @@ import { supabase } from "@/integrations/supabase/client";
 interface Lead {
   id: string;
   name: string;
-  email: string;
+  phone: string;
   created_at: string;
   last_access: string;
   access_count: number;
@@ -12,7 +12,7 @@ interface Lead {
 
 interface AuthContextType {
   user: Lead | null;
-  login: (name: string, email: string) => Promise<{ success: boolean; error?: string }>;
+  login: (name: string, phone: string) => Promise<{ success: boolean; error?: string }>;
   logout: () => void;
   isLoading: boolean;
 }
@@ -40,7 +40,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     setIsLoading(false);
   }, []);
 
-  const login = async (name: string, email: string): Promise<{ success: boolean; error?: string }> => {
+  const login = async (name: string, phone: string): Promise<{ success: boolean; error?: string }> => {
     try {
       setIsLoading(true);
 
@@ -48,7 +48,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       const { data: existingUser, error: fetchError } = await supabase
         .from("leads")
         .select("*")
-        .eq("email", email)
+        .eq("phone", phone)
         .maybeSingle();
 
       if (fetchError && fetchError.code !== 'PGRST116') {
@@ -66,7 +66,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
             last_access: new Date().toISOString(),
             access_count: existingUser.access_count + 1
           })
-          .eq("email", email)
+          .eq("phone", phone)
           .select("*")
           .single();
 
@@ -78,7 +78,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
           .from("leads")
           .insert({
             name,
-            email,
+            phone,
             access_count: 1
           })
           .select("*")
