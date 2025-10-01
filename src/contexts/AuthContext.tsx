@@ -1,5 +1,6 @@
 import { createContext, useContext, useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
+import { cleanPhone } from "@/lib/phone-utils";
 
 interface Lead {
   id: string;
@@ -44,11 +45,14 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     try {
       setIsLoading(true);
 
+      // Clean phone number (remove formatting)
+      const cleanedPhone = cleanPhone(phone);
+
       // Check if user exists
       const { data: existingUser, error: fetchError } = await supabase
         .from("leads")
         .select("*")
-        .eq("phone", phone)
+        .eq("phone", cleanedPhone)
         .maybeSingle();
 
       if (fetchError && fetchError.code !== 'PGRST116') {
@@ -66,7 +70,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
             last_access: new Date().toISOString(),
             access_count: existingUser.access_count + 1
           })
-          .eq("phone", phone)
+          .eq("phone", cleanedPhone)
           .select("*")
           .single();
 
@@ -78,7 +82,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
           .from("leads")
           .insert({
             name,
-            phone,
+            phone: cleanedPhone,
             access_count: 1
           })
           .select("*")
