@@ -303,8 +303,8 @@ const Library = () => {
                   disabled={isLoading} 
                   className="w-full font-medium shadow-md hover:shadow-lg transition-all duration-200"
                   style={{ 
-                    backgroundColor: '#C4FFE2', 
-                    color: '#240746',
+                    backgroundColor: '#124F45', 
+                    color: '#FFFFFF',
                     border: 'none'
                   }}
                 >
