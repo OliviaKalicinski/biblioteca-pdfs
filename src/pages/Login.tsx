@@ -7,6 +7,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/contexts/AuthContext";
 import { formatPhone, isValidPhone, getPhoneValidationError } from "@/lib/phone-utils";
+import backgroundImage from "@/assets/background-pattern.png";
 const Login = () => {
   const [name, setName] = useState("");
   const [phone, setPhone] = useState("");
@@ -61,7 +62,7 @@ const Login = () => {
     const formatted = formatPhone(e.target.value);
     setPhone(formatted);
   };
-  return <div className="min-h-screen bg-login-background flex items-center justify-center p-4">
+  return <div className="min-h-screen flex items-center justify-center p-4" style={{ backgroundImage: `url(${backgroundImage})`, backgroundSize: 'cover', backgroundPosition: 'center' }}>
       <div className="w-full max-w-md">
         <div className="text-center mb-8">
           <h1 className="text-4xl font-big-shoulders font-bold text-login-text mb-2">Base de Dados Científicos</h1>

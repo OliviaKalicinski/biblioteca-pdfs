@@ -8,6 +8,7 @@ import { useToast } from "@/hooks/use-toast";
 import { Search, Download, FileText, LogOut, User } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
+import backgroundImage from "@/assets/background-pattern.png";
 interface PDFFile {
   id: string;
   title: string;
@@ -215,7 +216,7 @@ const Library = () => {
     return colors[category] || 'bg-gray-100 text-gray-800 dark:bg-gray-900 dark:text-gray-200';
   };
   if (!user) return null;
-  return <div className="min-h-screen" style={{ backgroundColor: '#FFFBED' }}>
+  return <div className="min-h-screen" style={{ backgroundImage: `url(${backgroundImage})`, backgroundSize: 'cover', backgroundPosition: 'center' }}>
       {/* Header */}
       <header className="bg-white/80 backdrop-blur-sm border-b border-border sticky top-0 z-50">
         <div className="container mx-auto px-4 py-4">
