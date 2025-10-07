@@ -12,8 +12,14 @@ const Login = () => {
   const [name, setName] = useState("");
   const [phone, setPhone] = useState("");
   const navigate = useNavigate();
-  const { toast } = useToast();
-  const { login, user, isLoading } = useAuth();
+  const {
+    toast
+  } = useToast();
+  const {
+    login,
+    user,
+    isLoading
+  } = useAuth();
   useEffect(() => {
     if (user) {
       navigate("/biblioteca");
@@ -21,7 +27,6 @@ const Login = () => {
   }, [user, navigate]);
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
     if (!name.trim() || !phone.trim()) {
       toast({
         variant: "destructive",
@@ -41,7 +46,6 @@ const Login = () => {
       });
       return;
     }
-    
     const result = await login(name, phone);
     if (result.success) {
       toast({
@@ -57,15 +61,18 @@ const Login = () => {
       });
     }
   };
-
   const handlePhoneChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const formatted = formatPhone(e.target.value);
     setPhone(formatted);
   };
-  return <div className="min-h-screen flex items-center justify-center p-4" style={{ backgroundImage: `url(${backgroundImage})`, backgroundSize: 'cover', backgroundPosition: 'center' }}>
+  return <div className="min-h-screen flex items-center justify-center p-4" style={{
+    backgroundImage: `url(${backgroundImage})`,
+    backgroundSize: 'cover',
+    backgroundPosition: 'center'
+  }}>
       <div className="w-full max-w-md">
         <div className="text-center mb-8">
-          <h1 className="text-4xl font-big-shoulders font-bold text-login-text mb-2">Base de Dados Científicos</h1>
+          <h1 className="text-4xl font-big-shoulders font-bold text-login-text mb-2 py-[20px]">Base de Dados Científicos</h1>
           <p className="text-login-accent text-lg font-special-elite">Acervo especializado em pesquisas científicas sobre proteína de mosca-soldado-negra (BSF) para nutrição animal.</p>
         </div>
 
@@ -91,16 +98,7 @@ const Login = () => {
                 <Label htmlFor="phone" className="text-sm font-medium text-login-text font-special-elite">
                   Telefone
                 </Label>
-                <Input 
-                  id="phone" 
-                  type="tel" 
-                  placeholder="(00) 00000-0000" 
-                  value={phone} 
-                  onChange={handlePhoneChange}
-                  maxLength={15}
-                  className="h-11 bg-login-field-bg border-border focus:ring-primary focus:border-primary font-special-elite" 
-                  required 
-                />
+                <Input id="phone" type="tel" placeholder="(00) 00000-0000" value={phone} onChange={handlePhoneChange} maxLength={15} className="h-11 bg-login-field-bg border-border focus:ring-primary focus:border-primary font-special-elite" required />
               </div>
 
               <Button type="submit" className="w-full h-11 bg-login-accent hover:bg-login-accent/90 text-white font-semibold font-special-elite shadow-lg hover:shadow-xl transition-all duration-200 transform hover:scale-[1.02]" disabled={isLoading}>
