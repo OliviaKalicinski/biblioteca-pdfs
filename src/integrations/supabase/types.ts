@@ -14,59 +14,36 @@ export type Database = {
   }
   public: {
     Tables: {
-      download_logs: {
-        Row: {
-          downloaded_at: string
-          file_name: string
-          id: string
-          lead_id: string
-        }
-        Insert: {
-          downloaded_at?: string
-          file_name: string
-          id?: string
-          lead_id: string
-        }
-        Update: {
-          downloaded_at?: string
-          file_name?: string
-          id?: string
-          lead_id?: string
-        }
-        Relationships: [
-          {
-            foreignKeyName: "download_logs_lead_id_fkey"
-            columns: ["lead_id"]
-            isOneToOne: false
-            referencedRelation: "leads"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
       leads: {
         Row: {
-          access_count: number
+          cnpj: string | null
           created_at: string
+          email: string
           id: string
-          last_access: string
+          message: string | null
           name: string
-          phone: string
+          phone: string | null
+          updated_at: string
         }
         Insert: {
-          access_count?: number
+          cnpj?: string | null
           created_at?: string
+          email: string
           id?: string
-          last_access?: string
+          message?: string | null
           name: string
-          phone: string
+          phone?: string | null
+          updated_at?: string
         }
         Update: {
-          access_count?: number
+          cnpj?: string | null
           created_at?: string
+          email?: string
           id?: string
-          last_access?: string
+          message?: string | null
           name?: string
-          phone?: string
+          phone?: string | null
+          updated_at?: string
         }
         Relationships: []
       }
