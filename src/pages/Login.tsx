@@ -9,6 +9,7 @@ import { formatPhone, getPhoneValidationError } from "@/lib/phone-utils";
 
 const Login = () => {
   const [name, setName] = useState("");
+  const [email, setEmail] = useState("");
   const [phone, setPhone] = useState("");
   const navigate = useNavigate();
   const { toast } = useToast();
@@ -23,11 +24,20 @@ const Login = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    if (!name.trim() || !phone.trim()) {
+    if (!name.trim() || !email.trim() || !phone.trim()) {
       toast({
         variant: "destructive",
         title: "Campos obrigatórios",
         description: "Por favor, preencha todos os campos.",
+      });
+      return;
+    }
+
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+      toast({
+        variant: "destructive",
+        title: "E-mail inválido",
+        description: "Digite um endereço de e-mail válido.",
       });
       return;
     }
@@ -42,7 +52,7 @@ const Login = () => {
       return;
     }
 
-    const result = await login(name, phone);
+    const result = await login(name, phone, email);
     if (result.success) {
       toast({
         title: "Acesso liberado!",
@@ -116,6 +126,25 @@ const Login = () => {
                 placeholder="Digite seu nome"
                 value={name}
                 onChange={(e) => setName(e.target.value)}
+                required
+                className="h-11 font-special-elite bg-input border-border text-foreground placeholder:text-muted-foreground focus-visible:ring-1 focus-visible:ring-primary focus-visible:border-primary"
+              />
+            </div>
+
+            <div className="space-y-2">
+              <Label
+                htmlFor="email"
+                className="font-big-shoulders text-sm font-bold uppercase tracking-widest"
+                style={{ color: "#CCFF00" }}
+              >
+                E-mail
+              </Label>
+              <Input
+                id="email"
+                type="email"
+                placeholder="seu@email.com"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
                 required
                 className="h-11 font-special-elite bg-input border-border text-foreground placeholder:text-muted-foreground focus-visible:ring-1 focus-visible:ring-primary focus-visible:border-primary"
               />
