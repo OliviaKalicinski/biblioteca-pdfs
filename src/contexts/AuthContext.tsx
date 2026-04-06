@@ -61,7 +61,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       const cleanedPhone = cleanPhone(phone);
 
       // Check if lead already exists (by phone)
-      const { data: existing, error: fetchError } = await supabase
+      const { data: existing, error: fetchError } = await (supabase as any)
         .from("leads")
         .select("id, name, phone, email, created_at")
         .eq("phone", cleanedPhone)
