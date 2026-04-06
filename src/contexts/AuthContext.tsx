@@ -8,12 +8,13 @@ interface Lead {
   id: string;
   name: string;
   phone: string;
+  email: string;
   created_at: string;
 }
 
 interface AuthContextType {
   user: Lead | null;
-  login: (name: string, phone: string) => Promise<{ success: boolean; error?: string }>;
+  login: (name: string, phone: string, email: string) => Promise<{ success: boolean; error?: string }>;
   logout: () => void;
   isLoading: boolean;
 }
@@ -52,16 +53,17 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 
   const login = async (
     name: string,
-    phone: string
+    phone: string,
+    email: string
   ): Promise<{ success: boolean; error?: string }> => {
     setIsLoading(true);
     try {
       const cleanedPhone = cleanPhone(phone);
 
-      // Check if lead already exists
+      // Check if lead already exists (by phone)
       const { data: existing, error: fetchError } = await supabase
         .from("leads")
-        .select("id, name, phone, created_at")
+        .select("id, name, phone, email, created_at")
         .eq("phone", cleanedPhone)
         .maybeSingle();
 
@@ -72,22 +74,22 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       let userData: Lead;
 
       if (existing) {
-        // Lead exists — update name only (no access_count, no last_access)
+        // Lead exists — update name and email
         const { data: updated, error: updateError } = await supabase
           .from("leads")
-          .update({ name })
+          .update({ name, email })
           .eq("phone", cleanedPhone)
-          .select("id, name, phone, created_at")
+          .select("id, name, phone, email, created_at")
           .single();
 
         if (updateError) throw updateError;
         userData = updated;
       } else {
-        // New lead — insert with only the columns that definitely exist
+        // New lead — insert name, phone, email
         const { data: created, error: insertError } = await supabase
           .from("leads")
-          .insert({ name, phone: cleanedPhone })
-          .select("id, name, phone, created_at")
+          .insert({ name, phone: cleanedPhone, email })
+          .select("id, name, phone, email, created_at")
           .single();
 
         if (insertError) throw insertError;
