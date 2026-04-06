@@ -229,10 +229,10 @@ const Library = () => {
 
       // Log the download (best-effort — failure won't break anything)
       try {
-        await supabase.from("download_logs").insert({
+      await (supabase as any).from("download_logs").insert({
           lead_id: user?.id ?? "anonymous",
           file_name: pdf.file_name,
-        } as any);
+        });
       } catch {
         // Silently ignore — download already succeeded
       }
