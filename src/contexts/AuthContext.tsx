@@ -86,7 +86,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         userData = updated;
       } else {
         // New lead — insert name, phone, email
-        const { data: created, error: insertError } = await supabase
+        const { data: created, error: insertError } = await (supabase as any)
           .from("leads")
           .insert({ name, phone: cleanedPhone, email })
           .select("id, name, phone, email, created_at")
