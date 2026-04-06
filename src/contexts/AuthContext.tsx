@@ -61,7 +61,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       const cleanedPhone = cleanPhone(phone);
 
       // Check if lead already exists (by phone)
-      const { data: existing, error: fetchError } = await supabase
+      const { data: existing, error: fetchError } = await (supabase as any)
         .from("leads")
         .select("id, name, phone, email, created_at")
         .eq("phone", cleanedPhone)
@@ -75,7 +75,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 
       if (existing) {
         // Lead exists — update name and email
-        const { data: updated, error: updateError } = await supabase
+        const { data: updated, error: updateError } = await (supabase as any)
           .from("leads")
           .update({ name, email })
           .eq("phone", cleanedPhone)
@@ -86,7 +86,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         userData = updated;
       } else {
         // New lead — insert name, phone, email
-        const { data: created, error: insertError } = await supabase
+        const { data: created, error: insertError } = await (supabase as any)
           .from("leads")
           .insert({ name, phone: cleanedPhone, email })
           .select("id, name, phone, email, created_at")
