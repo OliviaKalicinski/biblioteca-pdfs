@@ -75,7 +75,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 
       if (existing) {
         // Lead exists — update name and email
-        const { data: updated, error: updateError } = await supabase
+        const { data: updated, error: updateError } = await (supabase as any)
           .from("leads")
           .update({ name, email })
           .eq("phone", cleanedPhone)
