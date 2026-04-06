@@ -2,13 +2,13 @@ import { createContext, useContext, useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { cleanPhone } from "@/lib/phone-utils";
 
+// ─── Types ───────────────────────────────────────────────────────────────────
+
 interface Lead {
   id: string;
   name: string;
   phone: string;
   created_at: string;
-  last_access: string;
-  access_count: number;
 }
 
 interface AuthContextType {
@@ -18,89 +18,90 @@ interface AuthContextType {
   isLoading: boolean;
 }
 
+// ─── Context ─────────────────────────────────────────────────────────────────
+
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export const useAuth = () => {
   const context = useContext(AuthContext);
   if (context === undefined) {
-    throw new Error('useAuth must be used within an AuthProvider');
+    throw new Error("useAuth must be used within an AuthProvider");
   }
   return context;
 };
+
+// ─── Provider ────────────────────────────────────────────────────────────────
 
 export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const [user, setUser] = useState<Lead | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
+  // Restore session from localStorage on mount
   useEffect(() => {
-    // Check if user is in localStorage
-    const userData = localStorage.getItem("pdfLibraryUser");
-    if (userData) {
-      setUser(JSON.parse(userData));
+    try {
+      const stored = localStorage.getItem("pdfLibraryUser");
+      if (stored) {
+        setUser(JSON.parse(stored));
+      }
+    } catch {
+      localStorage.removeItem("pdfLibraryUser");
+    } finally {
+      setIsLoading(false);
     }
-    setIsLoading(false);
   }, []);
 
-  const login = async (name: string, phone: string): Promise<{ success: boolean; error?: string }> => {
+  const login = async (
+    name: string,
+    phone: string
+  ): Promise<{ success: boolean; error?: string }> => {
+    setIsLoading(true);
     try {
-      setIsLoading(true);
-
-      // Clean phone number (remove formatting)
       const cleanedPhone = cleanPhone(phone);
 
-      // Check if user exists
-      const { data: existingUser, error: fetchError } = await supabase
+      // Check if lead already exists
+      const { data: existing, error: fetchError } = await supabase
         .from("leads")
-        .select("*")
+        .select("id, name, phone, created_at")
         .eq("phone", cleanedPhone)
         .maybeSingle();
 
-      if (fetchError && fetchError.code !== 'PGRST116') {
+      if (fetchError && fetchError.code !== "PGRST116") {
         throw fetchError;
       }
 
       let userData: Lead;
 
-      if (existingUser) {
-        // Update existing user
-        const { data: updatedUser, error: updateError } = await supabase
+      if (existing) {
+        // Lead exists — update name only (no access_count, no last_access)
+        const { data: updated, error: updateError } = await supabase
           .from("leads")
-          .update({
-            name,
-            last_access: new Date().toISOString(),
-            access_count: existingUser.access_count + 1
-          })
+          .update({ name })
           .eq("phone", cleanedPhone)
-          .select("*")
+          .select("id, name, phone, created_at")
           .single();
 
         if (updateError) throw updateError;
-        userData = updatedUser;
+        userData = updated;
       } else {
-        // Create new user
-        const { data: newUser, error: insertError } = await supabase
+        // New lead — insert with only the columns that definitely exist
+        const { data: created, error: insertError } = await supabase
           .from("leads")
-          .insert({
-            name,
-            phone: cleanedPhone,
-            access_count: 1
-          })
-          .select("*")
+          .insert({ name, phone: cleanedPhone })
+          .select("id, name, phone, created_at")
           .single();
 
         if (insertError) throw insertError;
-        userData = newUser;
+        userData = created;
       }
 
       setUser(userData);
       localStorage.setItem("pdfLibraryUser", JSON.stringify(userData));
-      
       return { success: true };
     } catch (error: any) {
       console.error("Login error:", error);
-      return { 
-        success: false, 
-        error: error.message || "Erro ao fazer login. Tente novamente." 
+      return {
+        success: false,
+        error: error.message || "Erro ao acessar. Tente novamente.",
       };
     } finally {
       setIsLoading(false);
